@@ -5,7 +5,7 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.enums import ParseMode
 
 
-from aiogram.client.bot import DefaultBotProperties # Теперь нужен такой код. Смотри 21 строку
+from aiogram.client.bot import DefaultBotProperties # Теперь нужен такой код. Смотри 21 строку. В видео этой строки нет.
 
 
 from dotenv import find_dotenv, load_dotenv
@@ -18,7 +18,7 @@ from common.bot_cmds_list import private
 ALLOWED_UPDATES = ['message', 'edited_message']
 
 
-bot = Bot(token=os.getenv('TOKEN'), default=DefaultBotProperties(parse_mode=ParseMode.HTML)) # Здесь отличие - в видеоуроке код устаревший
+bot = Bot(token=os.getenv('TOKEN'), default=DefaultBotProperties(parse_mode=ParseMode.HTML)) # Здесь отличие - в видеоуроке код устаревший добавлено default=DefaultBotProperties()
 dp = Dispatcher()
 
 dp.include_router(user_private_router)
