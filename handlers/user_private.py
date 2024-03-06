@@ -2,19 +2,24 @@ from aiogram import F, types, Router
 from aiogram.filters import CommandStart, Command, or_f
 from filters.chat_types import ChatTypeFilter
 
+from kbds import reply
+
 user_private_router = Router()
 user_private_router.message.filter(ChatTypeFilter(['private']))
 
 @user_private_router.message(CommandStart())
-async def start_cmd(message: types.Message):
-    await message.answer('Привет, я первый бот, созданный DmitryDW1')
+async def start(message: types.Message):
+    await message.answer('Привет, я первый бот, созданный DmitryDW1',
+                         reply_markup=reply.start_kb3.as_markup(
+                             resize_keyboard=True,
+                             input_field_placeholder='Что вы выбираете?'))
 
 # @user_private_router.message(F.text.lower() == 'меню')
 @user_private_router.message(or_f(Command('menu'), (F.text.lower() == 'меню')))
 async def echo_ddw(message: types.Message):
-    await message.answer('Посмотреть меню:')
+    await message.answer('Посмотреть меню:', reply_markup=reply.del_kbd)
 
-@user_private_router.message(F.text.lower() == 'Помощь')
+@user_private_router.message(F.text.lower() == 'помощь')
 @user_private_router.message(Command('help'))
 async def echo_ddw(message: types.Message):
     await message.answer('Помощь:')
@@ -44,7 +49,7 @@ async def echo_ddw(message: types.Message):
 
 @user_private_router.message(F.text)
 async def echo(message: types.Message):
-    await message.answer('Это магический фильтр 2!')
+    await message.answer('Моя твоя не понимай...')
 
 @user_private_router.message(F.photo)
 async def echo_ddw(message: types.Message):
@@ -52,4 +57,4 @@ async def echo_ddw(message: types.Message):
 
 @user_private_router.message(F.sticker)
 async def echo_ddw(message: types.Message):
-    await message.answer('Это магический фильтр 4!')
+    await message.answer('Это стикер:)')
