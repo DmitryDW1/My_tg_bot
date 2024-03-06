@@ -32,7 +32,7 @@ async def echo_ddw(message: types.Message):
 @user_private_router.message((F.text.lower().contains('плат')) | (F.text.lower() == 'варианты оплаты'))
 @user_private_router.message(Command('payment'))
 async def echo_ddw(message: types.Message):
-    await message.answer('Варианты оплаты:')
+    await message.answer('Варианты  оплаты:')
 
 @user_private_router.message((F.text.lower().contains('достав')) | (F.text.lower() == 'варианты доставки'))
 @user_private_router.message(Command('shipping'))
