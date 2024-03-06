@@ -1,7 +1,8 @@
 from aiogram import F, types, Router
 from aiogram.filters import CommandStart, Command, or_f
-from filters.chat_types import ChatTypeFilter
+from aiogram.utils.formatting import as_list, as_marked_section, Bold
 
+from filters.chat_types import ChatTypeFilter
 from kbds import reply
 
 user_private_router = Router()
@@ -16,28 +17,55 @@ async def start(message: types.Message):
 
 # @user_private_router.message(F.text.lower() == 'меню')
 @user_private_router.message(or_f(Command('menu'), (F.text.lower() == 'меню')))
-async def echo_ddw(message: types.Message):
+async def echo(message: types.Message):
     await message.answer('Посмотреть меню:', reply_markup=reply.del_kbd)
 
 @user_private_router.message(F.text.lower() == 'помощь')
 @user_private_router.message(Command('help'))
-async def echo_ddw(message: types.Message):
+async def echo(message: types.Message):
     await message.answer('Помощь:')
 
 @user_private_router.message(F.text.lower() == 'о нас')
 @user_private_router.message(Command('about'))
-async def echo_ddw(message: types.Message):
+async def echo(message: types.Message):
     await message.answer('О нас:')
 
 @user_private_router.message((F.text.lower().contains('плат')) | (F.text.lower() == 'варианты оплаты'))
 @user_private_router.message(Command('payment'))
-async def echo_ddw(message: types.Message):
-    await message.answer('Варианты  оплаты:')
+async def echco(message: types.Message):
+    
+    text = as_marked_section(
+        Bold('Варианты оплаты:'),
+        'Картой в боте',
+        'При получении карта/кеш',
+        'В заведении',
+        marker='✅ '
+        )
+    
+    await message.answer(text.as_html())
 
 @user_private_router.message((F.text.lower().contains('достав')) | (F.text.lower() == 'варианты доставки'))
 @user_private_router.message(Command('shipping'))
-async def echo_ddw(message: types.Message):
-    await message.answer('Варианты доставки:')
+async def echo(message: types.Message):
+    text = as_list(
+        as_marked_section
+        (
+            Bold('Варианты доставки/заказа:'),
+            'Курьер',
+            'Самовынос (сейчас прибегу заберу)',
+            'Поем у Вас (сейчас прибегу)',
+            marker='✅ '
+        ),
+        as_marked_section
+        (
+            Bold('Нельзя:'),
+            'Почта',
+            'Голуби',
+            marker='❌ '
+        ),
+        sep='\n-----------------------------\n'
+    )
+    await message.answer(text.as_html())
 
 # @user_private_router.message((F.text.lower().contains('доставк')) | (F.text.lower() == 'варианты доставки'))
 # async def echo(message: types.Message):
@@ -52,9 +80,20 @@ async def echo(message: types.Message):
     await message.answer('Моя твоя не понимай...')
 
 @user_private_router.message(F.photo)
-async def echo_ddw(message: types.Message):
-    await message.answer('Это магический фильтр 3!')
+async def echo(message: types.Message):
+    await message.answer('О, фоточка)))')
 
 @user_private_router.message(F.sticker)
-async def echo_ddw(message: types.Message):
+async def echo(message: types.Message):
     await message.answer('Это стикер:)')
+
+
+@user_private_router.message(F.contact)
+async def get_contact(message: types.Message):
+    await message.answer(f'Контакт')
+    await message.answer(str(message.contact))
+
+@user_private_router.message(F.location)
+async def get_location(message: types.Message):
+    await message.answer(f'Локация')
+    await message.answer(str(message.location))
