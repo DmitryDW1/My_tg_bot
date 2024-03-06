@@ -1,6 +1,11 @@
 from aiogram import F, types, Router
+from aiogram.enums import ParseMode
 from aiogram.filters import CommandStart, Command, or_f
-from aiogram.utils.formatting import as_list, as_marked_section, Bold
+from aiogram.utils.formatting import (
+    as_list,
+    as_marked_section,
+    Bold,
+)  # Italic, as_numbered_list и тд
 
 from filters.chat_types import ChatTypeFilter
 from kbds import reply
@@ -10,15 +15,24 @@ user_private_router.message.filter(ChatTypeFilter(['private']))
 
 @user_private_router.message(CommandStart())
 async def start(message: types.Message):
-    await message.answer('Привет, я первый бот, созданный DmitryDW1',
-                         reply_markup=reply.start_kb3.as_markup(
-                             resize_keyboard=True,
-                             input_field_placeholder='Что вы выбираете?'))
+    await message.answer(
+        'Привет, я первый бот, созданный DmitryDW1',
+        reply_markup=reply.get_keyboard(
+            "Меню",
+            "Помощь",
+            "О нас",
+            "Варианты оплаты",
+            "Варианты доставки",
+            "Отправить номер телефона",
+            placeholder='Что вы выбираете?',
+            sizes=(3, 2)
+        ),
+    )
 
 # @user_private_router.message(F.text.lower() == 'меню')
 @user_private_router.message(or_f(Command('menu'), (F.text.lower() == 'меню')))
 async def echo(message: types.Message):
-    await message.answer('Посмотреть меню:', reply_markup=reply.del_kbd)
+    await message.answer('Посмотреть меню:')
 
 @user_private_router.message(F.text.lower() == 'помощь')
 @user_private_router.message(Command('help'))
@@ -75,9 +89,9 @@ async def echo(message: types.Message):
 # async def echo(message: types.Message):
 #     await message.answer('Это магический фильтр!')
 
-@user_private_router.message(F.text)
-async def echo(message: types.Message):
-    await message.answer('Моя твоя не понимай...')
+# @user_private_router.message(F.text)
+# async def echo(message: types.Message):
+#     await message.answer('Моя твоя не понимай...')
 
 @user_private_router.message(F.photo)
 async def echo(message: types.Message):
