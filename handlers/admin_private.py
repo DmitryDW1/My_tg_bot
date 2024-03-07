@@ -1,13 +1,13 @@
 from aiogram import F, Router, types
-from aiogram.filters import Command
+from aiogram.filters import Command, StateFilter
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
 
 from filters.chat_types import ChatTypeFilter, IsAdmin
 from kbds.reply import get_keyboard
 
-
 admin_router = Router()
 admin_router.message.filter(ChatTypeFilter(["private"]), IsAdmin())
-
 
 ADMIN_KB = get_keyboard(
     "Добавить товар",
@@ -39,44 +39,52 @@ async def delete_product(message: types.Message):
     await message.answer("Выберите товар(ы) для удаления")
 
 
-#Код ниже для машины состояний (FSM)
+# Код ниже для машины состояний (FSM)
 
-class AddProduct(StateGroup)
+class AddProduct(StatesGroup):
+    name = State()
+    description = State()
+    price = State()
+    image = State()
 
-@admin_router.message(F.text == "Добавить товар")
-async def add_product(message: types.Message):
+
+@admin_router.message(StateFilter(), F.text == "Добавить товар")
+async def add_product(message: types.Message, state: FSMContext):
     await message.answer(
         "Введите название товара", reply_markup=types.ReplyKeyboardRemove()
     )
+    await state.set_state(AddProduct.name)
 
 
 @admin_router.message(Command("отмена"))
 @admin_router.message(F.text.casefold() == "отмена")
-async def cancel_handler(message: types.Message) -> None:
+async def cancel_handler(message: types.Message, state: FSMContext) -> None:
     await message.answer("Действия отменены", reply_markup=ADMIN_KB)
 
 
 @admin_router.message(Command("назад"))
 @admin_router.message(F.text.casefold() == "назад")
-async def cancel_handler(message: types.Message) -> None:
+async def cancel_handler(message: types.Message, state: FSMContext) -> None:
     await message.answer(f"ок, вы вернулись к прошлому шагу")
 
 
-@admin_router.message(F.text)
-async def add_name(message: types.Message):
+@admin_router.message(AddProduct.name, F.text)
+async def add_name(message: types.Message, state: FSMContext):
+    await state.update_data(name=message.text)
     await message.answer("Введите описание товара")
+    await state.set_state(AddProduct.description)
 
 
 @admin_router.message(F.text)
-async def add_description(message: types.Message):
+async def add_description(message: types.Message, state: FSMContext):
     await message.answer("Введите стоимость товара")
 
 
 @admin_router.message(F.text)
-async def add_price(message: types.Message):
+async def add_price(message: types.Message, state: FSMContext):
     await message.answer("Загрузите изображение товара")
 
 
 @admin_router.message(F.photo)
-async def add_image(message: types.Message):
+async def add_image(message: types.Message, state: FSMContext):
     await message.answer("Товар добавлен", reply_markup=ADMIN_KB)
