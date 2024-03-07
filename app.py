@@ -9,12 +9,12 @@ from aiogram.client.bot import DefaultBotProperties # Теперь нужен т
 
 
 from dotenv import find_dotenv, load_dotenv
-load_dotenv(find_dotenv())
 
 from handlers.user_private import user_private_router
 from handlers.user_group import user_group_router
 from common.bot_cmds_list import private
 
+load_dotenv(find_dotenv())
 ALLOWED_UPDATES = ['message', 'edited_message']
 
 
