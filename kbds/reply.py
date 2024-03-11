@@ -24,6 +24,7 @@ def get_keyboard(
             sizes=(2, 2, 1)
         )
     '''
+
     keyboard = ReplyKeyboardBuilder()
 
     for index, text in enumerate(btns, start=0):

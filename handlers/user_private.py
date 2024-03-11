@@ -6,7 +6,9 @@ from aiogram.utils.formatting import (
     as_marked_section,
     Bold,
 )  # Italic, as_numbered_list и тд
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from database.orm_query import orm_get_products
 from filters.chat_types import ChatTypeFilter
 from kbds import reply
 
@@ -16,6 +18,10 @@ user_private_router.message.filter(ChatTypeFilter(['private']))
 
 @user_private_router.message(CommandStart())
 async def start(message: types.Message):
+    """
+    Сообщение о начале работы бота
+    Включение клавиатуры юзера
+    """
     await message.answer(
         'Привет, я первый бот, созданный DmitryDW1',
         reply_markup=reply.get_keyboard(
@@ -33,7 +39,16 @@ async def start(message: types.Message):
 
 # @user_private_router.message(F.text.lower() == 'меню')
 @user_private_router.message(or_f(Command('menu'), (F.text.lower() == 'меню')))
-async def echo(message: types.Message):
+async def echo(message: types.Message, session: AsyncSession):
+    """
+    Вывод на экран меню с наименованием, описанием и ценой
+    """
+    for product in await orm_get_products(session):
+        await message.answer_photo(
+            product.image,
+            caption=f'<strong>{product.name}\
+                    </strong>\n{product.description}\nСтоимость: {round(product.price, 2)}',
+        )
     await message.answer('Посмотреть меню:')
 
 
@@ -51,7 +66,7 @@ async def echo(message: types.Message):
 
 @user_private_router.message((F.text.lower().contains('плат')) | (F.text.lower() == 'варианты оплаты'))
 @user_private_router.message(Command('payment'))
-async def echco(message: types.Message):
+async def echo(message: types.Message):
     text = as_marked_section(
         Bold('Варианты оплаты:'),
         'Картой в боте',
