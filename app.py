@@ -35,6 +35,9 @@ dp.include_router(admin_router)
 
 
 async def on_startup(bot):
+    """
+    Настройка базы данных.
+    """
     # await drop_db()
 
     await create_db()
