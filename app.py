@@ -1,5 +1,6 @@
 import asyncio
-import os
+# import os
+from os import getenv
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.enums import ParseMode
@@ -22,7 +23,7 @@ from handlers.user_group import user_group_router
 
 # ALLOWED_UPDATES = ['message', 'edited_message', 'callback_query']
 
-bot = Bot(token=os.getenv('TOKEN'),
+bot = Bot(token=getenv('TOKEN'),
           default=DefaultBotProperties(parse_mode=ParseMode.HTML))  # Здесь отличие - в видеоуроке код устаревший
 bot.my_admins_list = []
 dp = Dispatcher()
